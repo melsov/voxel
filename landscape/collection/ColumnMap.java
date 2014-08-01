@@ -41,8 +41,8 @@ public class ColumnMap {
 	}
 	
 	
-	class ColumnChunk {
-		public boolean built = false;
-	}
+//	public class ColumnChunk {
+//		public boolean built = false;
+//	}
 	
 }

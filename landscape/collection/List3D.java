@@ -8,8 +8,8 @@ import voxel.landscape.Coord3;
 
 public class List3D<T> 
 {
-	private Coord3 min, max;
-	private T list[][][];
+	private volatile Coord3 min, max;
+	private volatile T list[][][];
 	private Class<T> type;
 	
 	public List3D(Class<T> _type) { this( new Coord3(0), new Coord3(0), _type); }
@@ -29,7 +29,7 @@ public class List3D<T>
 	}
 	public T GetInstance(int x, int y, int z) {
 		T obj = SafeGet(x, y, z);
-		if( obj.equals( null ) ) {
+		if( obj == null  ) {
 			try {
 				obj = type.newInstance();
 			} catch (InstantiationException e) {
@@ -45,7 +45,7 @@ public class List3D<T>
 		return Get(pos.x, pos.y, pos.z);
 	}
 	public T Get(int x, int y, int z) {
-		return list[z-min.z][y-min.y][x-min.x];
+		return list[x-min.x][y-min.y][z-min.z];
 	}
 	
 	public T SafeGet(Coord3 pos) {
@@ -58,7 +58,7 @@ public class List3D<T>
 	
 	public void AddOrReplace(T obj, Coord3 pos) {
 		Coord3 newMin = Coord3.Min(min, pos);
-		Coord3 newMax = Coord3.Max(max, pos.add(Coord3.One()));
+		Coord3 newMax = Coord3.Max(max, pos.add(Coord3.One));
 		if(newMin != min || newMax != max) {
 			Resize(newMin, newMax);
 		}
@@ -83,7 +83,7 @@ public class List3D<T>
 		for(int x=oldMin.x; x<oldMax.x; x++) {
 			for(int y=oldMin.y; y<oldMax.y; y++) {
 				for(int z=oldMin.z; z<oldMax.z; z++) {
-					T val = oldList[z-oldMin.z][y-oldMin.y][x-oldMin.x];
+					T val = oldList[x-oldMin.x][y-oldMin.y][z-oldMin.z];
 					Set(val, x, y, z);
 				}
 			}
@@ -94,7 +94,7 @@ public class List3D<T>
 		Set(obj, pos.x, pos.y, pos.z);
 	}
 	public void Set(T obj, int x, int y, int z) {
-		list[z-min.z][y-min.y][x-min.x] = obj;
+		list[x-min.x][y-min.y][z-min.z] = obj;
 	}
 	
 	public boolean IndexWithinBounds(Coord3 pos) {

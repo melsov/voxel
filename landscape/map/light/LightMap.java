@@ -8,7 +8,6 @@ import voxel.landscape.collection.chunkarray.ChunkByte3D;
 public class LightMap {
 	private MapByte3D lights = new MapByte3D();
 	
-	
 	public boolean SetMaxLight(byte light, Coord3 pos) {
 		return SetMaxLight(light, pos.x, pos.y, pos.z);
 	}

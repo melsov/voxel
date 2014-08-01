@@ -1,12 +1,11 @@
-package voxel.landscape.collection;
+package voxel.landscape.map.light;
 
 import voxel.landscape.Chunk;
 import voxel.landscape.Coord3;
+import voxel.landscape.collection.MapByte3D;
+import voxel.landscape.collection.MapPrimitive2D;
 import voxel.landscape.collection.chunkarray.ChunkByte3D;
 import voxel.landscape.collection.chunkarray.ChunkUByte2D;
-import voxel.landscape.map.light.SunLightComputer;
-
-
 
 public class SunLightMap 
 {	
@@ -23,8 +22,8 @@ public class SunLightMap
 		return GetSunHeight(x, z) <= y;
 	}
 	private boolean IsSunLight(Coord3 chunkPos, Coord3 localPos, int worldY) {
-		ChunkUByte2D chunk = (ChunkUByte2D) rays.GetChunk(chunkPos.x, chunkPos.z);
-		return chunk != null && chunk.Get(localPos.x, localPos.z) <= worldY;
+		ChunkUByte2D chunkRayMap = (ChunkUByte2D) rays.GetChunk(chunkPos.x, chunkPos.z);
+		return chunkRayMap != null && chunkRayMap.Get(localPos.x, localPos.z) <= worldY;
 	}
 	public boolean SetMaxLight(byte light, Coord3 pos) {
 		return SetMaxLight(light, pos.x, pos.y, pos.z);
@@ -35,16 +34,18 @@ public class SunLightMap
 		
 		if( IsSunLight(chunkPos, localPos, y) ) return false;
 		
-		ChunkByte3D chunk = lights.GetChunkInstance(chunkPos);
-		byte oldLight = (byte) chunk.Get(localPos);
+		ChunkByte3D chunkLightMap = lights.GetChunkInstance(chunkPos);
+		byte oldLight = (byte) chunkLightMap.Get(localPos);
 		if(oldLight < light) {
-			chunk.Set(light, localPos);
+			chunkLightMap.Set(light, localPos);
 			return true;
 		}
 		return false;
 	}
 	
-	
+	/*
+	 * Set
+	 */
 	public void SetLight(byte light, Coord3 pos) {
 		SetLight(light, pos.x, pos.y, pos.z);
 	}
@@ -54,7 +55,9 @@ public class SunLightMap
 	public void SetLight(byte light, Coord3 chunkPos, Coord3 localPos) {
 		lights.GetChunkInstance(chunkPos).Set(light, localPos);
 	}
-	
+	/*
+	 * Get
+	 */
 	public byte GetLight(Coord3 pos) {
 		return GetLight(pos.x, pos.y, pos.z);
 	}
@@ -66,12 +69,21 @@ public class SunLightMap
 	public byte GetLight(Coord3 chunkPos, Coord3 localPos, int worldY) {
 		if(IsSunLight(chunkPos, localPos, worldY)) return SunLightComputer.MAX_LIGHT;
 		
-		ChunkByte3D chunk = lights.GetChunk(chunkPos);
-		if(chunk != null) {
-			byte light = (byte) chunk.Get(localPos);
+		ChunkByte3D chunkLightMap = lights.GetChunk(chunkPos);
+		if(chunkLightMap != null) {
+			byte light = (byte) chunkLightMap.Get(localPos);
 			return (byte) Math.max(SunLightComputer.MIN_LIGHT, light);
 		}
 		return SunLightComputer.MIN_LIGHT;
 	}
+	
+	/*
+	 * DEBUG!!
+	private void debugWithArrayMap(byte light, int x, int y, int z) {
+		Color color = new Color(Math.abs(z/164f), Math.abs(z/164f), .2f);
+		Array2DViewer.getInstance().setPixel(x, y, color);
+	}
+	 */
+	
 	
 }

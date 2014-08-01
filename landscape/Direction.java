@@ -6,13 +6,21 @@ public class Direction {
 	public static final int XNEG = 0, XPOS = 1, YNEG = 2, YPOS = 3, ZNEG=4, ZPOS=5;
 	
 	/* Index-able order array */
-	public static Coord3[] DirectionCoord = new Coord3[] {
+	public static Coord3[] DirectionCoords = new Coord3[] {
 		new Coord3(-1, 0, 0),
 		new Coord3( 1, 0, 0),
 		new Coord3( 0,-1, 0),
 		new Coord3( 0, 1, 0),
 		new Coord3( 0, 0,-1),
 		new Coord3( 0, 0, 1),
+	};
+	public static Vector3f[] DirectionVector3fs = new Vector3f[] {
+		new Vector3f(-1, 0, 0),
+		new Vector3f( 1, 0, 0),
+		new Vector3f( 0,-1, 0),
+		new Vector3f( 0, 1, 0),
+		new Vector3f( 0, 0,-1),
+		new Vector3f( 0, 0, 1),
 	};
 	
 	public static int OppositeDirection(int dir) 
@@ -26,7 +34,7 @@ public class Direction {
 	
 	public static Coord3 DirectionCoordForDirection(int dir)
 	{
-		return DirectionCoord[dir];
+		return DirectionCoords[dir];
 	}
 	
 	public static boolean IsNegDir(int dir)

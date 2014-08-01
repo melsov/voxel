@@ -7,8 +7,8 @@ import voxel.landscape.Coord3;
 
 public class List2D<T> {
 	
-	private T[][] list;
-	private Coord2 min, max;
+	private volatile T[][] list;
+	private volatile Coord2 min, max;
 	private Class<T> type;
 	
 	public List2D(Class<T> _type) { this(Coord2.zero, Coord2.zero, _type); }
@@ -23,13 +23,12 @@ public class List2D<T> {
 	public Coord2 GetSize() {
 		return max.minus(min);	
 	}
-
 	
 	public void Set(T obj, Coord2 pos) {
 		Set(obj, pos.x, pos.y);
 	}
 	public void Set(T obj, int x, int y) {
-		list[y-min.y][x-min.x] = obj;
+		list[x-min.x][y-min.y] = obj;
 	}
 	
 	public T GetInstance(Coord2 pos) {
@@ -55,7 +54,7 @@ public class List2D<T> {
 		return Get(pos.x, pos.y);
 	}
 	public T Get(int x, int y) {
-		return list[y-min.y][x-min.x];
+		return list[x-min.x][y-min.y];
 	}
 	
 	public T SafeGet(Coord2 pos) {
@@ -63,13 +62,13 @@ public class List2D<T> {
 	}
 	public T SafeGet(int x, int y) {
 		if(!IsCorrectIndex(x, y)) return null;
-		return list[y-min.y][x-min.x];
+		return list[x-min.x][y-min.y];
 	}
 	
 	public void AddOrReplace(T obj, Coord2 pos) {
 		Coord2 newMin = Coord2.Min(min, pos);
 		Coord2 newMax = Coord2.Max(max, pos.add(Coord2.one));
-		if(newMin != min || newMax != max) {
+		if(!newMin.equals(min) || !newMax.equals(max)) {
 			Resize(newMin, newMax);
 		}
 		Set(obj, pos);
@@ -89,7 +88,7 @@ public class List2D<T> {
 		list =(T[][]) Array.newInstance(type, size.x, size.y);
 		for(int x=oldMin.x; x<oldMax.x; x++) {
 			for(int y=oldMin.y; y<oldMax.y; y++) {
-				T val = oldList[y-oldMin.y][x-oldMin.x];
+				T val = oldList[x-oldMin.x][y-oldMin.y];
 				Set(val, x, y);
 			}
 		}
